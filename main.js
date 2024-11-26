@@ -9,6 +9,7 @@ import {
   playerActions,
   addPlayerEvents,
 } from "./src/core";
+import UI from "./src/ui";
 
 // 1. create a scene
 const scene = new THREE.Scene();
@@ -61,6 +62,7 @@ renderer.shadowMap.enabled = true;
 document.body.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
+renderer.render(scene, camera);
 
 // ADD EVENTS
 window.addEventListener("resize", () => {
@@ -94,5 +96,9 @@ function animate() {
   game.frames++;
 }
 
-animate();
+// animate();
+
+// ADD THE UI OF THE GAME.
+const ui = new UI();
+ui.insertToDom();
 
