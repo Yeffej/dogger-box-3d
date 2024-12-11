@@ -8,8 +8,11 @@ import {
   enemiesActions,
   playerActions,
   addPlayerEvents,
+  gameOver,
+  pauseGame,
 } from "./src/core";
 import UI from "./src/ui";
+import { KEYS } from "./src/utils";
 
 // 1. create a scene
 const scene = new THREE.Scene();
@@ -75,10 +78,13 @@ addPlayerEvents();
 
 const enemies = [];
 const game = {
-  score: 1,
+  score: 0,
   spawnRate: 100,
   frames: 0,
 };
+
+let isGameOver = false;
+const ui = new UI();
 
 // 6. animate
 function animate() {
@@ -86,19 +92,26 @@ function animate() {
   renderer.render(scene, camera);
 
   // do all the actions related to the player
-  playerActions(player, ground);
+  isGameOver = playerActions(player, ground);
+  if (isGameOver)
+    return gameOver(animationId, ui, scene, player, enemies, game);
 
   spawnEnemy(game, enemies, ground, scene);
 
   // do all the actions related to the enemies
-  enemiesActions(enemies, ground, player, animationId, scene);
+  isGameOver = enemiesActions(enemies, ground, player, scene);
+  if (isGameOver)
+    return gameOver(animationId, ui, scene, player, enemies, game);
+
+  ui.setScore(game.score);
+
+  // check if the game is paused
+  if (KEYS.p.pressed || KEYS.esc.pressed) return pauseGame(animationId, ui);
 
   game.frames++;
 }
 
-// animate();
-
 // ADD THE UI OF THE GAME.
-const ui = new UI();
+ui.onPlay(animate);
 ui.insertToDom();
 

@@ -14,6 +14,44 @@ export const KEYS = {
   space: {
     pressed: false,
   },
+  p: {
+    pressed: false,
+  },
+  esc: {
+    pressed: false,
+  },
+};
+
+export const onKeyPress = (code, isPressed) => {
+  switch (code) {
+    case "KeyW":
+      KEYS.w.pressed = isPressed;
+      break;
+
+    case "KeyS":
+      KEYS.s.pressed = isPressed;
+      break;
+
+    case "KeyA":
+      KEYS.a.pressed = isPressed;
+      break;
+
+    case "KeyD":
+      KEYS.d.pressed = isPressed;
+      break;
+
+    case "Space":
+      KEYS.space.pressed = isPressed;
+      break;
+
+    case "KeyP":
+      KEYS.p.pressed = isPressed;
+      break;
+
+    case "Escape":
+      KEYS.esc.pressed = isPressed;
+      break;
+  }
 };
 
 // remove a 3d object from scene and free memory

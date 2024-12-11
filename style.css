@@ -7,13 +7,15 @@
 .ui {
   position: fixed;
   inset: 0;
-  /* pointer-events: none; */
 
   display: grid;
   place-items: center;
-  animation-duration: 200ms;
+}
+.ui-wrapper {
+  /* opacity: 0; */
+  animation-duration: 300ms;
   animation-timing-function: linear;
-  /* animation-fill-mode: forwards; */
+  animation-fill-mode: forwards;
 }
 
 .ui-titles {
@@ -49,6 +51,19 @@
   background-color: #0450d8;
 }
 
+.ui-play {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+  top: 30px;
+  left: 25px;
+  font-size: 2em;
+  font-weight: 400;
+  text-transform: uppercase;
+  color: #3204d8;
+}
+
 @keyframes FadeIn {
   from {
     opacity: 0;
@@ -59,7 +74,7 @@
     visibility: initial;
   }
 }
-@keyframes FadeIn {
+@keyframes FadeOut {
   from {
     opacity: 1;
   }

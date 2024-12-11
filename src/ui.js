@@ -1,8 +1,12 @@
 class UI {
+  ui;
+  mainPlayBtn;
+  mainControlsBtn;
+  mainCreditsBtn;
   #pages;
-  #playBtnSubcritions;
-  #controlsBtnSubcritions;
-  #creditsBtnSubcritions;
+  #playBtnSubcritions = [];
+  #controlsBtnSubcritions = [];
+  #creditsBtnSubcritions = [];
 
   constructor() {
     this.ui = document.createElement("div");
@@ -14,24 +18,13 @@ class UI {
       credits: "",
     };
 
+    this.#createPrimaryElements();
     this.#setPages();
     this.#setEventsListener();
     this.goTo("main");
   }
 
-  #setPages() {
-    /* SET MAIN PAGE START */
-    this.#pages.main = `
-    <div class="ui-wrapper">
-        <div class="ui-titles">
-            <h1 class="ui-titles-main">Dogger Box 3D</h1>
-            <h4 class="ui-titles-sub">Welcome, Let's dodge!</h4>
-        </div>
-        <div class="ui-actions">
-            
-        </div>
-    </div>
-    `;
+  #createPrimaryElements() {
     this.mainPlayBtn = document.createElement("button");
     this.mainPlayBtn.textContent = "Play";
 
@@ -40,40 +33,130 @@ class UI {
 
     this.mainCreditsBtn = document.createElement("button");
     this.mainCreditsBtn.textContent = "Credits";
-    /* SET MAIN PAGE END */
+
+    this.scoreDisplay = document.createElement("span");
+    this.setScore(0);
+  }
+
+  #setPages() {
+    this.#pages.main = this.#mainPage();
+    this.#pages.play = this.#playPage();
+  }
+
+  #mainPage() {
+    const main = document.createElement("div");
+    main.className = "ui-wrapper";
+    main.innerHTML = `
+      <div class="ui-titles">
+          <h1 class="ui-titles-main">Dogger Box 3D</h1>
+          <h4 class="ui-titles-sub">Welcome, Let's dodge!</h4>
+      </div>
+      <div class="ui-actions">
+          
+      </div>
+    `;
+
+    main
+      .querySelector(".ui-actions")
+      .append(this.mainPlayBtn, this.mainControlsBtn, this.mainCreditsBtn);
+
+    return main;
+  }
+
+  #playPage() {
+    const play = document.createElement("div");
+    play.className = "ui-wrapper";
+    play.innerHTML = `
+      <div class="ui-play"></div>
+    `;
+
+    play.querySelector(".ui-play").append(this.scoreDisplay);
+
+    return play;
   }
 
   #setEventsListener() {
     // ON PLAY
-    this.mainPlayBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
+    this.mainPlayBtn.addEventListener("click", () => {
       this.goTo("play");
+      this.#playBtnSubcritions.forEach((callback) => callback());
     });
   }
 
   goTo(page) {
     switch (page) {
       case "main":
-        this.ui.innerHTML = this.#pages.main;
-        this.ui
-          .querySelector(".ui-actions")
-          .append(this.mainPlayBtn, this.mainControlsBtn, this.mainCreditsBtn);
+        this.#transitionPage().after(this.#pages.main);
         break;
 
       case "play":
-        this.ui.innerHTML = this.#pages.play;
+        this.#transitionPage().after(this.#pages.play, () => {
+          this.ui.style.pointerEvents = "none";
+          this.mainPlayBtn.textContent = "Play"; // in case PAUSE was the value
+        });
         break;
-      case "play":
+
+      case "controls":
+        this.#transitionPage();
         this.ui.innerHTML = this.#pages.controls;
         break;
-      case "play":
-        this.ui.innerHTML = this.#pages.credits;
 
+      case "credits":
+        this.#transitionPage();
+        this.ui.innerHTML = this.#pages.credits;
         break;
 
       default:
         break;
     }
+  }
+
+  #transitionPage() {
+    if (this.ui.firstElementChild) {
+      this.ui.firstElementChild.style.animationName = "FadeOut";
+      this.ui.firstElementChild.style.pointerEvents = "none";
+    }
+
+    const actions = {};
+    actions.after = (element, callback = null) => {
+      const performNewElementDuty = () => {
+        // reset and insert element/page
+        this.ui.appendChild(element);
+        element.style.animationName = "FadeIn";
+        element.style.pointerEvents = "auto";
+
+        if (callback) callback();
+      };
+
+      if (this.ui.firstElementChild) {
+        const onAnimationEnd = () => {
+          this.ui.firstElementChild.removeEventListener(
+            "animationend",
+            onAnimationEnd
+          );
+          this.ui.firstElementChild.remove();
+
+          performNewElementDuty();
+        };
+
+        return this.ui.firstElementChild.addEventListener(
+          "animationend",
+          onAnimationEnd
+        );
+      }
+
+      performNewElementDuty();
+    };
+
+    return actions;
+  }
+
+  setScore(score) {
+    this.scoreDisplay.textContent = `Score: ${score}`;
+  }
+
+  onPlay(callback) {
+    this.#playBtnSubcritions.push(callback);
   }
 
   insertToDom() {

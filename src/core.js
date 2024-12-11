@@ -1,8 +1,9 @@
-import { KEYS, remove3dObj } from "./utils";
+import { KEYS, onKeyPress, remove3dObj } from "./utils";
 import Box from "./box";
 
 const movementSpeed = 3;
 
+// returns true if the game is over
 export function playerActions(player, ground) {
   // neutral movement (velocity)
   player.velocity.x = 0;
@@ -27,17 +28,26 @@ export function playerActions(player, ground) {
     player.jump(ground);
   }
 
+  // if player is out of bounds, the game is over
+  if (player.checkIfOutBounds(ground)) return true;
+
   player.update(ground);
+
+  return false; // the game is not over
 }
 
-export function enemiesActions(enemies, ground, player, animationId, scene) {
+// if return true the enemy has collided with the player
+export function enemiesActions(enemies, ground, player, scene) {
+  let isPlayerDead = false;
+
   enemies.forEach((enemy) => {
     // acelerate the enemy in the z axis
     enemy.velocity.z += 2 * enemy.timeStep;
     enemy.update(ground);
 
     if (enemy.colladingWith(player)) {
-      cancelAnimationFrame(animationId);
+      // the game is over
+      isPlayerDead = true;
     }
 
     if (enemy.checkIfOutBounds(ground)) {
@@ -47,6 +57,8 @@ export function enemiesActions(enemies, ground, player, animationId, scene) {
       if (index > -1) enemies.splice(index, 1);
     }
   });
+
+  return isPlayerDead;
 }
 
 export function spawnEnemy(game, enemies, ground, scene) {
@@ -82,56 +94,36 @@ export function spawnEnemy(game, enemies, ground, scene) {
 
 export function addPlayerEvents() {
   window.addEventListener("keydown", (e) => {
-    switch (e.code) {
-      case "KeyW":
-        KEYS.w.pressed = true;
-        break;
-
-      case "KeyS":
-        KEYS.s.pressed = true;
-        break;
-
-      case "KeyA":
-        KEYS.a.pressed = true;
-        break;
-
-      case "KeyD":
-        KEYS.d.pressed = true;
-        break;
-
-      case "Space":
-        KEYS.space.pressed = true;
-        break;
-
-      default:
-        break;
-    }
+    onKeyPress(e.code, true);
   });
 
   window.addEventListener("keyup", (e) => {
-    switch (e.code) {
-      case "KeyW":
-        KEYS.w.pressed = false;
-        break;
-
-      case "KeyS":
-        KEYS.s.pressed = false;
-        break;
-
-      case "KeyA":
-        KEYS.a.pressed = false;
-        break;
-
-      case "KeyD":
-        KEYS.d.pressed = false;
-        break;
-
-      case "Space":
-        KEYS.space.pressed = false;
-        break;
-
-      default:
-        break;
-    }
+    onKeyPress(e.code, false);
   });
+}
+
+export function gameOver(animationId, ui, scene, player, enemies, game) {
+  // reset game stats
+  game.score = 0;
+  game.spawnRate = 100;
+  game.frames = 0;
+
+  // remove enemies from scene
+  enemies.forEach((enemy) => {
+    remove3dObj(enemy, scene);
+  });
+  enemies.length = 0; // wipe the array mantaining the reference
+
+  // reset player position and velocity
+  player.position.set(0, 0, 0);
+  player.velocity = { x: 0, y: 0, z: 0 };
+
+  ui.goTo("main");
+  return cancelAnimationFrame(animationId);
+}
+
+export function pauseGame(animationId, ui) {
+  ui.mainPlayBtn.textContent = "Pause";
+  ui.goTo("main");
+  return cancelAnimationFrame(animationId);
 }
