@@ -56,7 +56,7 @@ class Box extends THREE.Mesh {
   }
 
   #applyGravity(ground) {
-    if (this.colladingWith(ground)) {
+    if (this.colladingWithGround(ground)) {
       this.velocity.y = -this.velocity.y * 0.5;
     } else {
       this.velocity.y += -this.gravity * this.timeStep;
@@ -66,19 +66,34 @@ class Box extends THREE.Mesh {
   colladingWith(otherBox) {
     const collisionX =
       this.right >= otherBox.left && this.left <= otherBox.right;
-    const collisionY =
-      this.top >= otherBox.bottom &&
-      // the calculation is made to sum the velocity in which an object impact the other.
-      // otherwise the object will cross the object
-      this.bottom + this.velocity.y * this.timeStep <= otherBox.top;
+
+    // the calculation is made to sum the velocity in which an object impact the other. otherwise the object will cross the object
+    const bottom = this.bottom + this.velocity.y * this.timeStep;
+    const collisionY = this.top >= otherBox.bottom && bottom <= otherBox.top;
+
     const collisionZ =
       this.back >= otherBox.front && this.front <= otherBox.back;
 
     return collisionX && collisionY && collisionZ;
   }
 
+  // this function is require because Im using a very simple collision system
+  colladingWithGround(ground) {
+    const collisionX = this.right >= ground.left && this.left <= ground.right;
+
+    const bottom = this.bottom + this.velocity.y * this.timeStep;
+    const collisionY =
+      this.top >= ground.top &&
+      bottom <= ground.top &&
+      bottom >= ground.top - 0.1;
+
+    const collisionZ = this.back >= ground.front && this.front <= ground.back;
+
+    return collisionX && collisionY && collisionZ;
+  }
+
   jump(platform, velocity = 5) {
-    if (this.colladingWith(platform)) {
+    if (this.colladingWithGround(platform)) {
       this.velocity.y = velocity;
     }
   }
