@@ -1,6 +1,23 @@
 import { KEYS, onKeyPress, remove3dObj } from "./utils";
 import Box from "./box";
 
+const background = new Audio("/sounds/background.mp3");
+background.loop = true;
+background.volume = 0.5;
+const start = new Audio("/sounds/game-start.mp3");
+start.volume = 0.0;
+const jump = new Audio("/sounds/jump.mp3");
+jump.volume = 0.0;
+const over = new Audio("/sounds/game-over.wav");
+over.volume = 0.0;
+
+export const sounds = {
+  background,
+  start,
+  jump,
+  over
+}
+
 const movementSpeed = 3;
 
 // returns true if the game is over
@@ -103,6 +120,9 @@ export function addPlayerEvents() {
 }
 
 export function gameOver(animationId, ui, scene, player, enemies, game) {
+  // game over sound.
+  sounds.over.play();
+
   // reset game stats
   game.score = 0;
   game.spawnRate = 100;

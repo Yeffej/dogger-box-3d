@@ -10,6 +10,7 @@ import {
   addPlayerEvents,
   gameOver,
   pauseGame,
+  sounds,
 } from "./src/core";
 import UI from "./src/ui";
 import { KEYS } from "./src/utils";
@@ -67,12 +68,25 @@ document.body.appendChild(renderer.domElement);
 const controls = new OrbitControls(camera, renderer.domElement);
 renderer.render(scene, camera);
 
+// add 360 background texture
+const textureLoader = new THREE.TextureLoader();
+textureLoader.load("/textures/futuristic-bg.jpg", (texture) => {
+  texture.mapping = THREE.EquirectangularReflectionMapping;
+  texture.magFilter = THREE.LinearFilter; // Smooth scaling
+  texture.minFilter = THREE.LinearMipmapLinearFilter; // Better downscaling
+  texture.colorSpace = THREE.SRGBColorSpace; // Preserve correct colors
+
+  scene.background = texture; // Set the 360° background
+  renderer.render(scene, camera);
+});
+
 // ADD EVENTS
 window.addEventListener("resize", () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
 
   renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.render(scene, camera);
 });
 addPlayerEvents();
 
@@ -113,5 +127,22 @@ function animate() {
 
 // ADD THE UI OF THE GAME.
 ui.onPlay(animate);
+ui.onSound((isOn) => {
+  if(isOn) {
+    sounds.background.play();
+    for (const sound in sounds) {
+      if(sound != "background") {
+        sounds[sound].volume = 1.0;
+      }
+    }
+  } else {
+    sounds.background.pause();
+    for (const sound in sounds) {
+      if(sound != "background") {
+        sounds[sound].volume = 0.0;
+      }
+    }
+  }
+})
 ui.insertToDom();
 

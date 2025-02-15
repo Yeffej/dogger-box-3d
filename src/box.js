@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { sounds } from "./core";
 
 class Box extends THREE.Mesh {
   constructor({
@@ -95,6 +96,7 @@ class Box extends THREE.Mesh {
   jump(platform, velocity = 5) {
     if (this.colladingWithGround(platform)) {
       this.velocity.y = velocity;
+      sounds.jump.play();
     }
   }
 
