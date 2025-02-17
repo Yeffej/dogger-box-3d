@@ -70,7 +70,7 @@ renderer.render(scene, camera);
 
 // add 360 background texture
 const textureLoader = new THREE.TextureLoader();
-textureLoader.load("/textures/futuristic-bg.jpg", (texture) => {
+textureLoader.load("./textures/futuristic-bg.jpg", (texture) => {
   texture.mapping = THREE.EquirectangularReflectionMapping;
   texture.magFilter = THREE.LinearFilter; // Smooth scaling
   texture.minFilter = THREE.LinearMipmapLinearFilter; // Better downscaling

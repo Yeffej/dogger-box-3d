@@ -48,7 +48,7 @@ class UI {
     this.soundsBtn.id = "sound-wrapper";
 
     const iconSoundOn = document.createElement("img");
-    iconSoundOn.src = "/assets/sound-on.svg";
+    iconSoundOn.src = "./assets/sound-on.svg";
     iconSoundOn.width = 70;
     iconSoundOn.className = "sound-icon";
     iconSoundOn.style.display = "none";
@@ -56,7 +56,7 @@ class UI {
     
     const iconSoundOff = document.createElement("img");
     iconSoundOff.width = 70;
-    iconSoundOff.src = "/assets/sound-off.svg";
+    iconSoundOff.src = "./assets/sound-off.svg";
     iconSoundOff.className = "sound-icon";
     iconSoundOff.id = "soundOff";
 
@@ -112,7 +112,7 @@ class UI {
       <div class="ui-controls">
         <div class="controls-set">
           <figure>
-            <img src="/assets/wasd.png" />
+            <img src="./assets/wasd.png" />
           </figure>
           <p>
             Movements keys: W → Move Forward, A → Move Left, S → Move Backward, D → Move Right.
@@ -120,7 +120,7 @@ class UI {
         </div>
         <div class="controls-set">
           <figure>
-            <img src="/assets/space.png" />
+            <img src="./assets/space.png" />
           </figure>
           <p>
             -> JUMP.

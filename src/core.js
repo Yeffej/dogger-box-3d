@@ -1,14 +1,14 @@
 import { KEYS, onKeyPress, remove3dObj } from "./utils";
 import Box from "./box";
 
-const background = new Audio("/sounds/background.mp3");
+const background = new Audio("./sounds/background.mp3");
 background.loop = true;
 background.volume = 0.5;
-const start = new Audio("/sounds/game-start.mp3");
+const start = new Audio("./sounds/game-start.mp3");
 start.volume = 0.0;
-const jump = new Audio("/sounds/jump.mp3");
+const jump = new Audio("./sounds/jump.mp3");
 jump.volume = 0.0;
-const over = new Audio("/sounds/game-over.wav");
+const over = new Audio("./sounds/game-over.wav");
 over.volume = 0.0;
 
 export const sounds = {
